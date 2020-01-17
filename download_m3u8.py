@@ -43,7 +43,6 @@ def para_m3u8(m3u8_content):
     
     
 def download_file(url_list, target_url, num):
-    global num_d
     point = '.'*30
     equal = '='*30
     mid = int(30*int(url_list[0])/num)
@@ -58,7 +57,6 @@ def download_file(url_list, target_url, num):
         print('Fail to download {}'.format(target_url+'/'+url_list[1]))
         return None
     print('Downloading {} [{}]'.format(url_list[1], disp))
-    num_d = num_d + 1
     return [url_list[0], ts_res.content]
 
 def download_file_v2(url_list, target_url, num):
@@ -90,10 +88,10 @@ def save_mp4(mv_list, file_name):
     if  not os.path.exists(file_dier1):
         os.mkdir(file_dier1)
     file_path = os.path.join(file_dier1, file_name+'.mp4')
-    with open(file_path, 'wb') as f:
-        for i in range(len(mv_list)):
-            for j in mv_list:
-                if i == j[0]:
+    for i in range(len(mv_list)):
+        for j in mv_list:
+            if i == j[0]:
+                with open(file_path, 'ab') as f:
                     f.write(j[1])
 
 def main():
