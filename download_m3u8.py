@@ -110,7 +110,6 @@ def main():
         url_list1.append([i, j])
     p = Pool(10)
     num_url = len(url_list1)
-    mv_list = []
     partial_func = partial(download_file, target_url=target_url, num=num_url)
     # for i in range(num_url):
     #     mv_list.append(p.apply_async(download_file, (url_list1[i], target_url, num_url,)).get())
