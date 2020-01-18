@@ -82,17 +82,25 @@ def download_file_v2(url_list, target_url, num):
     with open(file_path, 'wb') as f:
         f.write(ts_res.content)
 
+
 def save_mp4(mv_list, file_name):
     file_dir = os.getcwd()
     file_dier1 = os.path.join(file_dir, 'movies')
-    if  not os.path.exists(file_dier1):
+    if not os.path.exists(file_dier1):
         os.mkdir(file_dier1)
     file_path = os.path.join(file_dier1, file_name+'.mp4')
-    for i in range(len(mv_list)):
-        for j in mv_list:
-            if i == j[0]:
-                with open(file_path, 'ab') as f:
-                    f.write(j[1])
+    # for i in range(len(mv_list)):
+    #     for j in mv_list:
+    #         if i == j[0]:
+    #             with open(file_path, 'ab') as f:
+    #                 f.write(j[1])
+    if len(mv_list)==[]:
+        print("Didn't download any movies!")
+    mv_list.sort(key=lambda x: x[0])
+    for i in mv_list:
+        temp = i[1]
+        with open(file_path, 'ab') as f:
+            f.write(temp)
 
 def main():
     m3u8_content, target_url, file_name = get_m3u8_content()
@@ -100,17 +108,17 @@ def main():
     url_list1 = []
     for i, j in enumerate(url_list):
         url_list1.append([i, j])
-    p = Pool()
+    p = Pool(10)
     num_url = len(url_list1)
     mv_list = []
     partial_func = partial(download_file, target_url=target_url, num=num_url)
     # for i in range(num_url):
     #     mv_list.append(p.apply_async(download_file, (url_list1[i], target_url, num_url,)).get())
     print('-------------start-------------')
-    p.map(partial_func, url_list1)
+    mv_list = p.map(partial_func, url_list1) #多进程返回的mv_list是一个返回值组成的列表
     p.close()
     p.join()
-    save_mp4(mv_list, file_name)
+    save_mp4(mv_list, file_name)  
     print('-------------end-------------')
     
 if __name__ == '__main__':
