@@ -1,1 +1,1 @@
-just use the code 'python downloadm3u8.py' in your command line
+Just use the command 'python downloadm3u8.py' in your cmd to download mp4 file.Please remember to enter the folder which contains downloadm3u8.py file in advance.The downloaded file will be in the same folder as m3u8 file.
