@@ -28,7 +28,7 @@ def get_m3u8_content():
         return None
     else:
         m3u8_content = m3u8_result.content.decode('utf8')
-        return m3u8_content, target_url,file_name
+        return m3u8_content, target_url, file_name
 
 def para_m3u8(m3u8_content):
     if '#EXTM3U' not in m3u8_content:
@@ -38,7 +38,8 @@ def para_m3u8(m3u8_content):
     url_list = []
     for i in content:
         if '.ts' in i:
-            url_list.append(i)
+            split_i_url = i.split('/')
+            url_list.append(split_i_url[-1])
     return url_list
     
     
