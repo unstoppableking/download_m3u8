@@ -59,7 +59,7 @@ class Ts_class():
         self.file_dir = os.listdir(file_dir_ts)
         self.content = b''
 
-    def get(self):
+    def get(self, num):
         if self.name in self.file_dir:
             with open(os.path.join(self.file_dir_ts, self.name), 'rb') as f:
                 self.content = f.read()
@@ -69,7 +69,7 @@ class Ts_class():
                 print('Fail to download {}'.format(self.url))
                 return None
             self.content = ts_res.content
-        print('Downloading {}'.format(self.url))
+        print('%{} finished!'.format(int(self.number/num*100)))
         return None
 
     def save(self):
@@ -84,9 +84,9 @@ class Ts_class():
                 return None
 
 
-def download(url_name, f_dir='a'):
+def download(url_name, f_dir='a', num_all=999):
     ts = Ts_class(url_name[0], url_name[1], url_name[2], f_dir)
-    ts.get()
+    ts.get(num_all)
     return ts
 
 
@@ -129,7 +129,7 @@ def main():
     ts_list = [[m3.url_list[i], m3.url_name[i], i] for i in range(len(m3.url_list))]
 
     p = Pool(10)
-    partial_func = partial(download, f_dir=movie_file_dir)
+    partial_func = partial(download, f_dir=movie_file_dir, num_all=len(m3.url_list))
     # for i in range(num_url):
     #     mv_list.append(p.apply_async(download_file, (url_list1[i], target_url, num_url,)).get())
     print('-------------start-------------')
