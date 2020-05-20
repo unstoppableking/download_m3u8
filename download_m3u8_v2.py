@@ -7,7 +7,7 @@ We have open multiplystread for speeding up
 """
 import os 
 import requests
-import sys
+#import sys
 from multiprocessing.pool import Pool
 from functools import partial
 from tqdm import tqdm
@@ -24,11 +24,18 @@ if not os.path.exists(file_dir1):
 
 class M3u8_class():
     def __init__(self, url):
+        self.url = url
         self.url_list = []
         self.url_name = []
-        url_all = url.split('/')
-        self.file_name = url_all[-2]
-        self.base_url = '/'.join(url_all[:-1])
+        self.url_all = url.split('/')
+        self.file_name = self.url_all[-2]
+        self.base_url = '/'.join(self.url_all[:-1])
+
+    def para_m3u8(self, url=None, base_url=None):
+        if url == None:
+            url = self.url
+        if base_url==None:
+            base_url = self.base_url
         try:
             m3u8_result = requests.get(url, headers = headers)
         except Exception as e:
@@ -39,8 +46,6 @@ class M3u8_class():
             exit()
         else:
             self.m3u8_content = m3u8_result.content.decode('utf8')
-
-    def para_m3u8(self):
         if '#EXTM3U' not in self.m3u8_content:
             print('Not a m3u8 url!')
             return None
@@ -49,7 +54,19 @@ class M3u8_class():
             if '.ts' in i:
                 split_i_url = i.split('/')
                 self.url_name.append(split_i_url[-1])
-                self.url_list.append(self.base_url+'/'+split_i_url[-1])
+                self.url_list.append(base_url+'/'+split_i_url[-1])
+            elif '.m3u' in i:
+                self.new_m3u(i)
+                
+    def new_m3u(self, new_url_part):
+        temp = new_url_part.split('/')
+        new_url_list = self.url_all[:-1]
+        for i in temp:
+            if not i  in self.url_all[:-1]:
+                new_url_list.append(i)
+        new_url =  '/'.join(new_url_list)
+        new_base_url = '/'.join(new_url_list[:-1])
+        self.para_m3u8(new_url, new_base_url)
 
 
 class Ts_class():
