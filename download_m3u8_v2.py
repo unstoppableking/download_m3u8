@@ -7,8 +7,10 @@ We have open multiplystread for speeding up
 """
 import os 
 import requests
+import sys
 from multiprocessing.pool import Pool
 from functools import partial
+from tqdm import tqdm
 
 headers = {
    'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chro\
@@ -69,7 +71,9 @@ class Ts_class():
                 print('Fail to download {}'.format(self.url))
                 return None
             self.content = ts_res.content
-        print('%{} finished!'.format(int(self.number/num*100)))
+        # sys.stdout.write('%.4f finished!\r'  %float((self.number+1)/num*100))
+        # sys.stdout.flush()
+       # print('%.4f finished!' %float((self.number+1)/num*100))
         return None
 
     def save(self):
@@ -82,8 +86,7 @@ class Ts_class():
             else:
                 print("file %s doesn't exist!" % self.name)
                 return None
-
-
+   
 def download(url_name, f_dir='a', num_all=999):
     ts = Ts_class(url_name[0], url_name[1], url_name[2], f_dir)
     ts.get(num_all)
@@ -128,16 +131,17 @@ def main():
 
     ts_list = [[m3.url_list[i], m3.url_name[i], i] for i in range(len(m3.url_list))]
 
-    p = Pool(10)
     partial_func = partial(download, f_dir=movie_file_dir, num_all=len(m3.url_list))
     # for i in range(num_url):
     #     mv_list.append(p.apply_async(download_file, (url_list1[i], target_url, num_url,)).get())
     print('-------------start-------------')
-    mv_list = p.map(partial_func,  ts_list)  # 多进程返回的mv_list是一个返回值组成的列表
+    p = Pool(10)
+    # mv_list = p.map(partial_func,  ts_list)  # 多进程返回的mv_list是一个返回值组成的列表
+    mv_list = list(tqdm(p.imap(partial_func, ts_list), total=len(m3.url_list), desc='downloading ts', ascii=True))
     p.close()
     p.join()
     save_mp4(mv_list, m3.file_name, movie_file_dir)
-    print('-------------end-------------')
+    print('------------finished-----------')
     
 if __name__ == '__main__':
     main()
